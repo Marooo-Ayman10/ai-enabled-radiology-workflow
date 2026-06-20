@@ -28,7 +28,7 @@ The workflow follows the patient's imaging journey from registration and imaging
 
 ## Workflow Snapshot
 
-![Workflow Snapshot](Workflow_Snapshot.png)
+![Workflow Snapshot](workflow_snapshot.png)
 
 ## Files
 
