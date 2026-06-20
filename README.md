@@ -9,7 +9,7 @@ The workflow illustrates how different systems communicate and collaborate to su
 ---
 
 <p align="center">
-  <img src="workflow_snapshot.png" width="1000">
+<img src="workflow_snapshot.png" width="850">
 </p>
 
 ---
