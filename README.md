@@ -1,9 +1,5 @@
 # AI-Enabled Radiology Workflow using BPMN 2.0
 
-<p align="center">
-  <img src="workflow_snapshot.png" width="1000">
-</p>
-
 ## Overview
 
 This repository presents a **BPMN 2.0 workflow model** for an AI-enabled radiology process, demonstrating the integration of healthcare information systems and imaging standards throughout the patient's diagnostic journey.
@@ -11,6 +7,11 @@ This repository presents a **BPMN 2.0 workflow model** for an AI-enabled radiolo
 The workflow illustrates how different systems communicate and collaborate to support efficient radiology operations, from patient registration to final report delivery.
 
 ---
+
+<p align="center">
+  <img src="workflow_snapshot.png" width="1000">
+</p>
+
 
 ## System Components
 
