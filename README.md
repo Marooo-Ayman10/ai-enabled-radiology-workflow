@@ -1,66 +1,83 @@
-# AI-Enabled Radiology Workflow using BPMN 2.0
-
-## Overview
-
-This repository presents a **BPMN 2.0 workflow model** for an AI-enabled radiology process, demonstrating the integration of healthcare information systems and imaging standards throughout the patient's diagnostic journey.
-
-The workflow illustrates how different systems communicate and collaborate to support efficient radiology operations, from patient registration to final report delivery.
-
----
+# 🩻 AI-Enabled Radiology Workflow using BPMN 2.0
 
 <p align="center">
+
 <img src="workflow_snapshot.png" width="850">
+
+</p>
+
+<p align="center">
+
+<img src="https://img.shields.io/badge/BPMN-2.0-blue"/>
+<img src="https://img.shields.io/badge/HL7-v2.x-green"/>
+<img src="https://img.shields.io/badge/DICOM-Standard-orange"/>
+<img src="https://img.shields.io/badge/AI-Radiology-purple"/>
+<img src="https://img.shields.io/badge/Status-Completed-success"/>
+
 </p>
 
 ---
 
-## System Components
+# 📖 Overview
 
-🏥 **Hospital Information System (HIS)**
+This repository presents a **BPMN 2.0 workflow model** for an AI-enabled radiology process, demonstrating the integration of healthcare information systems, imaging standards, and AI-assisted diagnostic workflows throughout the patient's imaging journey.
 
-🖥️ **Radiology Information System (RIS)**
-
-📦 **Picture Archiving and Communication System (PACS)**
-
-🤖 **AI Engine**
-
-👨‍⚕️ **Radiologists**
-
-📷 **Modality Technologists**
+The workflow illustrates how healthcare systems communicate and collaborate to support efficient radiology operations, from patient registration to final report delivery.
 
 ---
 
-## Workflow Overview
+# 🏥 System Components
 
-The workflow follows the patient's journey through the radiology department:
-
-1. Patient Registration
-
-2. Imaging Order Creation
-
-3. HL7 ORM Order Transmission
-
-4. Examination Scheduling
-
-5. Modality Worklist Retrieval
-
-6. Image Acquisition
-
-7. DICOM Study Archiving
-
-8. AI-assisted Image Analysis
-
-9. Radiologist Interpretation
-
-10. Structured Report Validation
-
-11. HL7 ORU Result Transmission
-
-12. Report Delivery to HIS
+| Component                | Description                                |
+| ------------------------ | ------------------------------------------ |
+| 🏥 HIS                   | Hospital Information System                |
+| 🖥️ RIS                  | Radiology Information System               |
+| 📦 PACS                  | Picture Archiving and Communication System |
+| 🤖 AI Engine             | AI-assisted image analysis                 |
+| 👨‍⚕️ Radiologist        | Diagnostic interpretation and reporting    |
+| 📷 Modality Technologist | Image acquisition                          |
 
 ---
 
-## Key Concepts Demonstrated
+# 🔄 Workflow Overview
+
+```text
+Patient Registration
+        ↓
+Imaging Order Creation
+        ↓
+HL7 ORM Transmission
+        ↓
+RIS Scheduling
+        ↓
+Modality Worklist Retrieval
+        ↓
+Image Acquisition
+        ↓
+DICOM Study Archiving
+        ↓
+AI-assisted Analysis
+        ↓
+Radiologist Validation
+        ↓
+HL7 ORU Transmission
+        ↓
+Report Delivery to HIS
+```
+
+---
+
+# 📷 Workflow Snapshot
+
+<p align="center">
+
+<img src="workflow_snapshot.png" width="850">
+
+</p>
+
+---
+
+# 💡 Key Concepts Demonstrated
 
 * HL7 ORM Imaging Orders
 
@@ -82,25 +99,26 @@ The workflow follows the patient's journey through the radiology department:
 
 ---
 
-## Repository Contents
+# 📂 Repository Contents
 
 | File                                | Description            |
 | ----------------------------------- | ---------------------- |
-| intelligent-radiology-workflow.bpmn | BPMN 2.0 source file   |
+| intelligent-radiology-workflow.bpmn | BPMN 2.0 source model  |
 | workflow_snapshot.png               | Workflow visualization |
 | README.md                           | Project documentation  |
+| LICENSE                             | MIT License            |
 
 ---
 
-## Future Enhancements
+# 🚀 Future Enhancements
 
 * FHIR Integration
 
 * Critical Findings Notification
 
-* Voice Recognition Reporting
-
 * AI-based Triage Workflow
+
+* Voice Recognition Reporting
 
 * Peer Review Process
 
@@ -108,7 +126,7 @@ The workflow follows the patient's journey through the radiology department:
 
 ---
 
-## Standards and Technologies
+# ⚙️ Standards and Technologies
 
 * BPMN 2.0
 
@@ -124,10 +142,28 @@ The workflow follows the patient's journey through the radiology department:
 
 ---
 
-### Author
+# 👨‍💻 Author
 
-**Marwan Ayman**
+### Marwan Ayman
 
-Junior Healthcare IT Engineer
+Healthcare IT Engineer
 
-Interested in PACS, DICOM, HL7, Healthcare Interoperability, and AI-powered Radiology Solutions.
+Focused on:
+
+* PACS
+* HL7
+* DICOM
+* Healthcare Interoperability
+* AI-powered Radiology Solutions
+
+---
+
+# 📄 Repository Information
+
+**Version:** v1.0
+
+**License:** MIT
+
+**Last Updated:** June 2026
+
+---
