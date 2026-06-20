@@ -12,6 +12,7 @@ The workflow illustrates how different systems communicate and collaborate to su
   <img src="workflow_snapshot.png" width="1000">
 </p>
 
+---
 
 ## System Components
 
