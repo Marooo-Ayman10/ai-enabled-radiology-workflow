@@ -9,14 +9,6 @@
 <img src="https://img.shields.io/badge/AI-Radiology-purple"/>
 <img src="https://img.shields.io/badge/Status-Completed-success"/>
 
-</p>
----
-
-<p align="center">
-
-<img src="workflow_snapshot.png" width="850">
-
-</p>
 
 ---
 
