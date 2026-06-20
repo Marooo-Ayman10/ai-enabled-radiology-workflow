@@ -1,0 +1,1197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_Intelligent_Radiology" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.48.0">
+  <bpmn:collaboration id="Collaboration_Intelligent_Radiology">
+    <bpmn:participant id="Participant_Patient" name="Patient" processRef="Process_Patient" />
+    <bpmn:participant id="Participant_HIS" name="Hospital Information System (HIS)" processRef="Process_HIS" />
+    <bpmn:participant id="Participant_Synapse" name="Fujifilm Synapse PACS" processRef="Process_Synapse" />
+    <bpmn:participant id="Participant_Radiologist" name="Radiologist" processRef="Process_Radiologist" />
+    <bpmn:messageFlow id="MF_PatientData" name="Patient Data" sourceRef="Task_ProvidePatientData" targetRef="Start_ReceivePatientData" />
+    <bpmn:messageFlow id="MF_CancelNotice" name="Cancellation Notice" sourceRef="Task_SendCancellation" targetRef="Event_PatientReceiveCancellation" />
+    <bpmn:messageFlow id="MF_ORM" name="HL7 ORM Order" sourceRef="Task_SendORM" targetRef="Start_ReceiveORM" />
+    <bpmn:messageFlow id="MF_Appointment" name="Appointment Notification" sourceRef="Task_SendAppointment" targetRef="Event_ReceiveAppointment" />
+    <bpmn:messageFlow id="MF_ReportImages" name="Images for Reporting" sourceRef="Task_SendImagesForReporting" targetRef="Start_RadiologistReceiveImages" />
+    <bpmn:messageFlow id="MF_AIFindings" name="AI Findings" sourceRef="Task_SendAIFindings" targetRef="Task_ReviewAIFindings" />
+    <bpmn:messageFlow id="MF_ApprovedReport" name="Approved Report" sourceRef="Task_SendApprovedReport" targetRef="Event_ReceiveApprovedReport" />
+    <bpmn:messageFlow id="MF_ORU" name="HL7 ORU Report" sourceRef="Task_SendORU" targetRef="Event_ReceiveORU" />
+    <bpmn:messageFlow id="MF_NotifyPatient" name="Report Notification" sourceRef="Task_NotifyPatient" targetRef="Event_ReceiveFinalReport" />
+    <bpmn:messageFlow id="Flow_1631bhb" name="Patient Data" sourceRef="Task_ProvidePatientData" targetRef="Task_RegisterPatient" />
+    <bpmn:messageFlow id="Flow_07vbuk8" name="Report Notification" sourceRef="Task_NotifyPatient" targetRef="Event_ReceiveFinalReport" />
+    <bpmn:messageFlow id="Flow_0pk7oeg" sourceRef="Task_SendCancellation" targetRef="Event_PatientReceiveCancellation" />
+    <bpmn:messageFlow id="Flow_046zes6" name="HL7 ORM Order" sourceRef="Task_SendORM" targetRef="Start_ReceiveORM" />
+    <bpmn:messageFlow id="Flow_0kx25vs" sourceRef="Task_SendAppointment" targetRef="Event_ReceiveAppointment" />
+    <bpmn:messageFlow id="Flow_1na8ra9" name="HL7 ORU Report" sourceRef="Task_SendORU" targetRef="Event_ReceiveORU" />
+    <bpmn:messageFlow id="Flow_0cxn5me" name="Approved Report" sourceRef="Task_SendApprovedReport" targetRef="Event_ReceiveApprovedReport" />
+    <bpmn:messageFlow id="Flow_07z32r9" name="Images for Reporting" sourceRef="Task_SendImagesForReporting" targetRef="Start_RadiologistReceiveImages" />
+    <bpmn:messageFlow id="Flow_168j7o6" name="AI Findings" sourceRef="Task_SendAIFindings" targetRef="Task_ReviewAIFindings" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_Patient" isExecutable="false">
+    <bpmn:sequenceFlow id="Flow_P1" sourceRef="Start_PatientArrives" targetRef="Task_ProvidePatientData" />
+    <bpmn:sequenceFlow id="Flow_P2" sourceRef="Task_ProvidePatientData" targetRef="Event_ReceiveAppointment" />
+    <bpmn:sequenceFlow id="Flow_P3" sourceRef="Event_ReceiveAppointment" targetRef="Event_ExamDateReached" />
+    <bpmn:sequenceFlow id="Flow_P4" sourceRef="Event_ExamDateReached" targetRef="Gateway_PatientAttended" />
+    <bpmn:sequenceFlow id="Flow_P5_No" name="No" sourceRef="Gateway_PatientAttended" targetRef="Event_PatientReceiveCancellation" />
+    <bpmn:sequenceFlow id="Flow_P5_Yes" name="Yes" sourceRef="Gateway_PatientAttended" targetRef="Event_ReceiveFinalReport" />
+    <bpmn:sequenceFlow id="Flow_P6" sourceRef="Event_PatientReceiveCancellation" targetRef="End_PatientCancelled" />
+    <bpmn:sequenceFlow id="Flow_P7" sourceRef="Event_ReceiveFinalReport" targetRef="End_ReportDelivered" />
+    <bpmn:sequenceFlow id="Flow_1r3k8ge" sourceRef="Event_ReceiveFinalReport" targetRef="End_ReportDelivered" />
+    <bpmn:sequenceFlow id="Flow_1g3bdln" sourceRef="Event_PatientReceiveCancellation" targetRef="End_PatientCancelled" />
+    <bpmn:sequenceFlow id="Flow_1k1udkb" sourceRef="Task_ProvidePatientData" targetRef="Event_ReceiveAppointment" />
+    <bpmn:sequenceFlow id="Flow_0jy4nkp" sourceRef="Event_ReceiveAppointment" targetRef="Event_ExamDateReached" />
+    <bpmn:sequenceFlow id="Flow_0niblwn" name="YES" sourceRef="Gateway_PatientAttended" targetRef="Event_ReceiveFinalReport" />
+    <bpmn:sequenceFlow id="Flow_15aedeg" name="NO" sourceRef="Gateway_PatientAttended" targetRef="Event_PatientReceiveCancellation" />
+    <bpmn:sequenceFlow id="Flow_0yglfll" sourceRef="Event_ExamDateReached" targetRef="Gateway_PatientAttended" />
+    <bpmn:sequenceFlow id="Flow_1pvjfhb" sourceRef="Start_PatientArrives" targetRef="Task_ProvidePatientData" />
+    <bpmn:intermediateCatchEvent id="Event_ReceiveAppointment" name="Receive Appointment Notification">
+      <bpmn:incoming>Flow_P2</bpmn:incoming>
+      <bpmn:incoming>Flow_1k1udkb</bpmn:incoming>
+      <bpmn:outgoing>Flow_P3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0jy4nkp</bpmn:outgoing>
+      <bpmn:messageEventDefinition />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:userTask id="Task_ProvidePatientData" name="Provide Patient Data">
+      <bpmn:incoming>Flow_P1</bpmn:incoming>
+      <bpmn:incoming>Flow_1pvjfhb</bpmn:incoming>
+      <bpmn:outgoing>Flow_P2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1k1udkb</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:intermediateCatchEvent id="Event_ExamDateReached" name="Examination Date Reached">
+      <bpmn:incoming>Flow_P3</bpmn:incoming>
+      <bpmn:incoming>Flow_0jy4nkp</bpmn:incoming>
+      <bpmn:outgoing>Flow_P4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0yglfll</bpmn:outgoing>
+      <bpmn:timerEventDefinition />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:exclusiveGateway id="Gateway_PatientAttended" name="Patient Attended Appointment?">
+      <bpmn:incoming>Flow_P4</bpmn:incoming>
+      <bpmn:incoming>Flow_0yglfll</bpmn:incoming>
+      <bpmn:outgoing>Flow_P5_No</bpmn:outgoing>
+      <bpmn:outgoing>Flow_P5_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_15aedeg</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0niblwn</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:startEvent id="Start_PatientArrives" name="Patient Arrives at Hospital">
+      <bpmn:outgoing>Flow_P1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1pvjfhb</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="End_ReportDelivered" name="Radiology Report Delivered">
+      <bpmn:incoming>Flow_P7</bpmn:incoming>
+      <bpmn:incoming>Flow_1r3k8ge</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:intermediateCatchEvent id="Event_ReceiveFinalReport" name="Receive Approved Report">
+      <bpmn:incoming>Flow_P5_Yes</bpmn:incoming>
+      <bpmn:incoming>Flow_0niblwn</bpmn:incoming>
+      <bpmn:outgoing>Flow_P7</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1r3k8ge</bpmn:outgoing>
+      <bpmn:messageEventDefinition />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:endEvent id="End_PatientCancelled" name="Examination Cancelled">
+      <bpmn:incoming>Flow_P6</bpmn:incoming>
+      <bpmn:incoming>Flow_1g3bdln</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:intermediateCatchEvent id="Event_PatientReceiveCancellation" name="Receive Cancellation Notice">
+      <bpmn:incoming>Flow_P5_No</bpmn:incoming>
+      <bpmn:incoming>Flow_15aedeg</bpmn:incoming>
+      <bpmn:outgoing>Flow_P6</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1g3bdln</bpmn:outgoing>
+      <bpmn:messageEventDefinition />
+    </bpmn:intermediateCatchEvent>
+  </bpmn:process>
+  <bpmn:process id="Process_HIS" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_HIS">
+      <bpmn:lane id="Lane_Billing" name="Billing Department">
+        <bpmn:flowNodeRef>Gateway_InsuranceValid</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_VerifyInsurance</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RecordFinancialApproval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_NotifyPatient</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_ReceiveORU</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_HISReportSent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_HISCancelled</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SendCancellation</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_OrderingPhysician" name="Ordering Physician">
+        <bpmn:flowNodeRef>Task_ExaminePatient</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SendORM</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CreateImagingOrder</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Receptionist" name="Receptionist">
+        <bpmn:flowNodeRef>Start_ReceivePatientData</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RegisterPatient</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_UpdatePatientInfo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CreateVisit</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="Flow_H1" sourceRef="Start_ReceivePatientData" targetRef="Task_RegisterPatient" />
+    <bpmn:sequenceFlow id="Flow_H2" sourceRef="Task_RegisterPatient" targetRef="Task_UpdatePatientInfo" />
+    <bpmn:sequenceFlow id="Flow_H3" sourceRef="Task_UpdatePatientInfo" targetRef="Task_CreateVisit" />
+    <bpmn:sequenceFlow id="Flow_H4" sourceRef="Task_CreateVisit" targetRef="Task_ExaminePatient" />
+    <bpmn:sequenceFlow id="Flow_H5" sourceRef="Task_ExaminePatient" targetRef="Task_VerifyInsurance" />
+    <bpmn:sequenceFlow id="Flow_H6" sourceRef="Task_VerifyInsurance" targetRef="Task_RecordFinancialApproval" />
+    <bpmn:sequenceFlow id="Flow_H7" sourceRef="Task_RecordFinancialApproval" targetRef="Gateway_InsuranceValid" />
+    <bpmn:sequenceFlow id="Flow_H8_No" name="No" sourceRef="Gateway_InsuranceValid" targetRef="Task_SendCancellation" />
+    <bpmn:sequenceFlow id="Flow_H9" sourceRef="Task_SendCancellation" targetRef="End_HISCancelled" />
+    <bpmn:sequenceFlow id="Flow_H8_Yes" name="Yes" sourceRef="Gateway_InsuranceValid" targetRef="Task_CreateImagingOrder" />
+    <bpmn:sequenceFlow id="Flow_H10" sourceRef="Task_CreateImagingOrder" targetRef="Task_SendORM" />
+    <bpmn:sequenceFlow id="Flow_H11" sourceRef="Task_SendORM" targetRef="Event_ReceiveORU" />
+    <bpmn:sequenceFlow id="Flow_H12" sourceRef="Event_ReceiveORU" targetRef="Task_NotifyPatient" />
+    <bpmn:sequenceFlow id="Flow_H13" sourceRef="Task_NotifyPatient" targetRef="End_HISReportSent" />
+    <bpmn:dataStoreReference id="DataStore_HIS" name="HIS Database" />
+    <bpmn:dataStoreReference id="DataStore_Billing" name="Billing Database" />
+    <bpmn:sequenceFlow id="Flow_1tafe0s" sourceRef="Task_CreateVisit" targetRef="Task_ExaminePatient" />
+    <bpmn:sequenceFlow id="Flow_0mu6k4k" sourceRef="Task_CreateImagingOrder" targetRef="Task_SendORM" />
+    <bpmn:sequenceFlow id="Flow_1tue6eg" sourceRef="Task_SendORM" targetRef="Event_ReceiveORU" />
+    <bpmn:sequenceFlow id="Flow_1ktqi4t" sourceRef="Task_NotifyPatient" targetRef="End_HISReportSent" />
+    <bpmn:sequenceFlow id="Flow_196cw18" sourceRef="Event_ReceiveORU" targetRef="Task_NotifyPatient" />
+    <bpmn:sequenceFlow id="Flow_16k8mqn" sourceRef="Task_SendCancellation" targetRef="End_HISCancelled" />
+    <bpmn:sequenceFlow id="Flow_0th0y8o" sourceRef="Task_VerifyInsurance" targetRef="Task_RecordFinancialApproval" />
+    <bpmn:sequenceFlow id="Flow_1evapmr" sourceRef="Task_ExaminePatient" targetRef="Task_VerifyInsurance" />
+    <bpmn:sequenceFlow id="Flow_195ub0j" sourceRef="Gateway_InsuranceValid" targetRef="Task_CreateImagingOrder" />
+    <bpmn:sequenceFlow id="Flow_0mjnk11" name="NO" sourceRef="Gateway_InsuranceValid" targetRef="Task_SendCancellation" />
+    <bpmn:sequenceFlow id="Flow_11xr7s2" sourceRef="Task_RecordFinancialApproval" targetRef="Gateway_InsuranceValid" />
+    <bpmn:sequenceFlow id="Flow_0kd2bz3" sourceRef="Task_UpdatePatientInfo" targetRef="Task_CreateVisit" />
+    <bpmn:sequenceFlow id="Flow_0a43pt0" sourceRef="Task_RegisterPatient" targetRef="Task_UpdatePatientInfo" />
+    <bpmn:sequenceFlow id="Flow_1nfyywj" sourceRef="Start_ReceivePatientData" targetRef="Task_RegisterPatient" />
+    <bpmn:serviceTask id="Task_CreateVisit" name="Create Patient Visit">
+      <bpmn:incoming>Flow_H3</bpmn:incoming>
+      <bpmn:incoming>Flow_0kd2bz3</bpmn:incoming>
+      <bpmn:outgoing>Flow_H4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1tafe0s</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Task_ExaminePatient" name="Examine Patient">
+      <bpmn:incoming>Flow_H4</bpmn:incoming>
+      <bpmn:incoming>Flow_1tafe0s</bpmn:incoming>
+      <bpmn:outgoing>Flow_H5</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1evapmr</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_HISReportSent" name="Report Notification Sent">
+      <bpmn:incoming>Flow_H13</bpmn:incoming>
+      <bpmn:incoming>Flow_1ktqi4t</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:intermediateCatchEvent id="Event_ReceiveORU" name="Receive HL7 ORU Report">
+      <bpmn:incoming>Flow_H11</bpmn:incoming>
+      <bpmn:incoming>Flow_1tue6eg</bpmn:incoming>
+      <bpmn:outgoing>Flow_H12</bpmn:outgoing>
+      <bpmn:outgoing>Flow_196cw18</bpmn:outgoing>
+      <bpmn:messageEventDefinition />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sendTask id="Task_NotifyPatient" name="Notify Patient">
+      <bpmn:incoming>Flow_H12</bpmn:incoming>
+      <bpmn:incoming>Flow_196cw18</bpmn:incoming>
+      <bpmn:outgoing>Flow_H13</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1ktqi4t</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:userTask id="Task_RecordFinancialApproval" name="Record Financial Approval">
+      <bpmn:incoming>Flow_H6</bpmn:incoming>
+      <bpmn:incoming>Flow_0th0y8o</bpmn:incoming>
+      <bpmn:outgoing>Flow_H7</bpmn:outgoing>
+      <bpmn:outgoing>Flow_11xr7s2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:dataStoreReference id="DataStoreReference_1d8vb33" name="Billing Database" />
+    <bpmn:userTask id="Task_VerifyInsurance" name="Verify Insurance Eligibility">
+      <bpmn:incoming>Flow_H5</bpmn:incoming>
+      <bpmn:incoming>Flow_1evapmr</bpmn:incoming>
+      <bpmn:outgoing>Flow_H6</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0th0y8o</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_InsuranceValid" name="Insurance Valid?">
+      <bpmn:incoming>Flow_H7</bpmn:incoming>
+      <bpmn:incoming>Flow_11xr7s2</bpmn:incoming>
+      <bpmn:outgoing>Flow_H8_No</bpmn:outgoing>
+      <bpmn:outgoing>Flow_H8_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0mjnk11</bpmn:outgoing>
+      <bpmn:outgoing>Flow_195ub0j</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:dataStoreReference id="DataStoreReference_0etvsm2" name="HIS Database" />
+    <bpmn:userTask id="Task_UpdatePatientInfo" name="Update Patient Information">
+      <bpmn:incoming>Flow_H2</bpmn:incoming>
+      <bpmn:incoming>Flow_0a43pt0</bpmn:incoming>
+      <bpmn:outgoing>Flow_H3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0kd2bz3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_RegisterPatient" name="Register Patient">
+      <bpmn:incoming>Flow_H1</bpmn:incoming>
+      <bpmn:incoming>Flow_1nfyywj</bpmn:incoming>
+      <bpmn:outgoing>Flow_H2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0a43pt0</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:startEvent id="Start_ReceivePatientData" name="Receive Patient Data">
+      <bpmn:outgoing>Flow_H1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1nfyywj</bpmn:outgoing>
+      <bpmn:messageEventDefinition />
+    </bpmn:startEvent>
+    <bpmn:sendTask id="Task_SendORM" name="Send HL7 ORM Order">
+      <bpmn:incoming>Flow_H10</bpmn:incoming>
+      <bpmn:incoming>Flow_0mu6k4k</bpmn:incoming>
+      <bpmn:outgoing>Flow_H11</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1tue6eg</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:userTask id="Task_CreateImagingOrder" name="Create Imaging Order">
+      <bpmn:incoming>Flow_H8_Yes</bpmn:incoming>
+      <bpmn:incoming>Flow_195ub0j</bpmn:incoming>
+      <bpmn:outgoing>Flow_H10</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0mu6k4k</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_HISCancelled" name="Examination Cancelled">
+      <bpmn:incoming>Flow_H9</bpmn:incoming>
+      <bpmn:incoming>Flow_16k8mqn</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sendTask id="Task_SendCancellation" name="Send Cancellation Notice">
+      <bpmn:incoming>Flow_H8_No</bpmn:incoming>
+      <bpmn:incoming>Flow_0mjnk11</bpmn:incoming>
+      <bpmn:outgoing>Flow_H9</bpmn:outgoing>
+      <bpmn:outgoing>Flow_16k8mqn</bpmn:outgoing>
+    </bpmn:sendTask>
+  </bpmn:process>
+  <bpmn:process id="Process_Synapse" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Synapse">
+      <bpmn:lane id="Lane_AI" name="AI Engine">
+        <bpmn:flowNodeRef>Gateway_AIEnabled</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_AnalyzeImages</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_GenerateAIFindings</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SendAIFindings</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_PACS" name="PACS Archive">
+        <bpmn:flowNodeRef>Task_ReceiveDICOM</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ArchiveDICOM</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RetrieveImages</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SendImagesForReporting</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Modality" name="Modality Technician">
+        <bpmn:flowNodeRef>Gateway_ImagesComplete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_VerifyImageQuality</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PerformExam</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RetrieveMWL</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SendDICOM</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RepeatAcquisition</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_RIS" name="RIS">
+        <bpmn:flowNodeRef>Task_GenerateAccession</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Start_ReceiveORM</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ScheduleExam</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PublishMWL</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SendAppointment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RescheduleExam</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SendORU</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_StoreStructuredReport</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_ReceiveApprovedReport</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_RISComplete</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="Flow_S1" sourceRef="Start_ReceiveORM" targetRef="Task_GenerateAccession" />
+    <bpmn:sequenceFlow id="Flow_S2" sourceRef="Task_GenerateAccession" targetRef="Task_ScheduleExam" />
+    <bpmn:sequenceFlow id="Flow_S3" sourceRef="Task_ScheduleExam" targetRef="Task_PublishMWL" />
+    <bpmn:sequenceFlow id="Flow_S4" sourceRef="Task_PublishMWL" targetRef="Task_SendAppointment" />
+    <bpmn:sequenceFlow id="Flow_S5" name="Patient Attended" sourceRef="Task_SendAppointment" targetRef="Task_RetrieveMWL" />
+    <bpmn:sequenceFlow id="Flow_S5_No" name="No Show" sourceRef="Task_SendAppointment" targetRef="Task_RescheduleExam" />
+    <bpmn:sequenceFlow id="Flow_S6" sourceRef="Task_RetrieveMWL" targetRef="Task_PerformExam" />
+    <bpmn:sequenceFlow id="Flow_S7" sourceRef="Task_PerformExam" targetRef="Task_VerifyImageQuality" />
+    <bpmn:sequenceFlow id="Flow_S8" sourceRef="Task_VerifyImageQuality" targetRef="Gateway_ImagesComplete" />
+    <bpmn:sequenceFlow id="Flow_S8_No" name="No" sourceRef="Gateway_ImagesComplete" targetRef="Task_RepeatAcquisition" />
+    <bpmn:sequenceFlow id="Flow_S8_No_Loop" sourceRef="Task_RepeatAcquisition" targetRef="Task_VerifyImageQuality" />
+    <bpmn:sequenceFlow id="Flow_S8_Yes" name="Yes" sourceRef="Gateway_ImagesComplete" targetRef="Task_SendDICOM" />
+    <bpmn:sequenceFlow id="Flow_S9" sourceRef="Task_SendDICOM" targetRef="Task_ReceiveDICOM" />
+    <bpmn:sequenceFlow id="Flow_S10" sourceRef="Task_ReceiveDICOM" targetRef="Task_ArchiveDICOM" />
+    <bpmn:sequenceFlow id="Flow_S11" sourceRef="Task_ArchiveDICOM" targetRef="Task_RetrieveImages" />
+    <bpmn:sequenceFlow id="Flow_S12" sourceRef="Task_RetrieveImages" targetRef="Gateway_AIEnabled" />
+    <bpmn:sequenceFlow id="Flow_S13_Yes" name="Yes" sourceRef="Gateway_AIEnabled" targetRef="Task_AnalyzeImages" />
+    <bpmn:sequenceFlow id="Flow_S13_No" name="No" sourceRef="Gateway_AIEnabled" targetRef="Task_SendImagesForReporting" />
+    <bpmn:sequenceFlow id="Flow_S14" sourceRef="Task_AnalyzeImages" targetRef="Task_GenerateAIFindings" />
+    <bpmn:sequenceFlow id="Flow_S15" sourceRef="Task_GenerateAIFindings" targetRef="Task_SendAIFindings" />
+    <bpmn:sequenceFlow id="Flow_S16" sourceRef="Task_SendAIFindings" targetRef="Task_SendImagesForReporting" />
+    <bpmn:sequenceFlow id="Flow_S17" sourceRef="Task_SendImagesForReporting" targetRef="Event_ReceiveApprovedReport" />
+    <bpmn:sequenceFlow id="Flow_S18" sourceRef="Event_ReceiveApprovedReport" targetRef="Task_StoreStructuredReport" />
+    <bpmn:sequenceFlow id="Flow_S19" sourceRef="Task_StoreStructuredReport" targetRef="Task_SendORU" />
+    <bpmn:sequenceFlow id="Flow_S20" sourceRef="Task_SendORU" targetRef="End_RISComplete" />
+    <bpmn:dataStoreReference id="DataStore_RIS" name="RIS Database" />
+    <bpmn:dataStoreReference id="DataStore_RISWorklist" name="RIS Worklist Database" />
+    <bpmn:dataStoreReference id="DataStore_PACS" name="PACS Archive" />
+    <bpmn:dataStoreReference id="DataStore_AI" name="AI Repository" />
+    <bpmn:dataStoreReference id="DataStore_Reporting" name="Reporting Database" />
+    <bpmn:exclusiveGateway id="Gateway_AIEnabled" name="AI Service Enabled?">
+      <bpmn:incoming>Flow_S12</bpmn:incoming>
+      <bpmn:incoming>Flow_093p2lx</bpmn:incoming>
+      <bpmn:outgoing>Flow_S13_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_S13_No</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0jjxqyf</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0hb9try</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0kz964s" sourceRef="Start_ReceiveORM" targetRef="Task_GenerateAccession" />
+    <bpmn:sequenceFlow id="Flow_08zf6y9" sourceRef="Task_GenerateAccession" targetRef="Task_ScheduleExam" />
+    <bpmn:sequenceFlow id="Flow_0glwol4" sourceRef="Task_ScheduleExam" targetRef="Task_PublishMWL" />
+    <bpmn:sequenceFlow id="Flow_1yzfw0f" sourceRef="Task_PublishMWL" targetRef="Task_SendAppointment" />
+    <bpmn:sequenceFlow id="Flow_0crxlsr" name="No Show" sourceRef="Task_SendAppointment" targetRef="Task_RescheduleExam" />
+    <bpmn:serviceTask id="Task_GenerateAccession" name="Generate Accession Number">
+      <bpmn:incoming>Flow_S1</bpmn:incoming>
+      <bpmn:incoming>Flow_0kz964s</bpmn:incoming>
+      <bpmn:outgoing>Flow_S2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_08zf6y9</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:startEvent id="Start_ReceiveORM" name="Receive HL7 ORM Order">
+      <bpmn:outgoing>Flow_S1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0kz964s</bpmn:outgoing>
+      <bpmn:messageEventDefinition />
+    </bpmn:startEvent>
+    <bpmn:dataStoreReference id="DataStoreReference_04wggmi" name="RIS Database" />
+    <bpmn:userTask id="Task_ScheduleExam" name="Schedule Examination">
+      <bpmn:incoming>Flow_S2</bpmn:incoming>
+      <bpmn:incoming>Flow_08zf6y9</bpmn:incoming>
+      <bpmn:outgoing>Flow_S3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0glwol4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_PublishMWL" name="Publish MWL Entry">
+      <bpmn:incoming>Flow_S3</bpmn:incoming>
+      <bpmn:incoming>Flow_0glwol4</bpmn:incoming>
+      <bpmn:incoming>Flow_1amvip8</bpmn:incoming>
+      <bpmn:outgoing>Flow_S4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1yzfw0f</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sendTask id="Task_SendAppointment" name="Send Appointment Notification">
+      <bpmn:incoming>Flow_S4</bpmn:incoming>
+      <bpmn:incoming>Flow_1yzfw0f</bpmn:incoming>
+      <bpmn:outgoing>Flow_S5</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0crxlsr</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0ncntf0</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:userTask id="Task_RescheduleExam" name="Reschedule Examination">
+      <bpmn:incoming>Flow_S5_No</bpmn:incoming>
+      <bpmn:incoming>Flow_0crxlsr</bpmn:incoming>
+      <bpmn:outgoing>Flow_S4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1amvip8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0izrj8x" sourceRef="Task_RetrieveMWL" targetRef="Task_PerformExam" />
+    <bpmn:sequenceFlow id="Flow_0lj4xtc" sourceRef="Task_PerformExam" targetRef="Task_VerifyImageQuality" />
+    <bpmn:sequenceFlow id="Flow_0pphfgy" name="YES" sourceRef="Gateway_ImagesComplete" targetRef="Task_SendDICOM" />
+    <bpmn:sequenceFlow id="Flow_0h77o60" sourceRef="Task_VerifyImageQuality" targetRef="Gateway_ImagesComplete" />
+    <bpmn:sequenceFlow id="Flow_0lgw6vl" sourceRef="Task_SendDICOM" targetRef="Task_ReceiveDICOM" />
+    <bpmn:receiveTask id="Task_ReceiveDICOM" name="Receive DICOM Study">
+      <bpmn:incoming>Flow_S9</bpmn:incoming>
+      <bpmn:incoming>Flow_0lgw6vl</bpmn:incoming>
+      <bpmn:outgoing>Flow_S10</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0vid3g8</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:serviceTask id="Task_ArchiveDICOM" name="Archive DICOM Study">
+      <bpmn:incoming>Flow_S10</bpmn:incoming>
+      <bpmn:incoming>Flow_0vid3g8</bpmn:incoming>
+      <bpmn:outgoing>Flow_S11</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1i8q9c6</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_RetrieveImages" name="Retrieve Images for Reporting">
+      <bpmn:incoming>Flow_S11</bpmn:incoming>
+      <bpmn:incoming>Flow_1i8q9c6</bpmn:incoming>
+      <bpmn:outgoing>Flow_S12</bpmn:outgoing>
+      <bpmn:outgoing>Flow_093p2lx</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0vid3g8" sourceRef="Task_ReceiveDICOM" targetRef="Task_ArchiveDICOM" />
+    <bpmn:sequenceFlow id="Flow_1i8q9c6" sourceRef="Task_ArchiveDICOM" targetRef="Task_RetrieveImages" />
+    <bpmn:sequenceFlow id="Flow_0djljqu" name="NO" sourceRef="Gateway_ImagesComplete" targetRef="Task_RepeatAcquisition" />
+    <bpmn:exclusiveGateway id="Gateway_ImagesComplete" name="Images Complete?">
+      <bpmn:incoming>Flow_S8</bpmn:incoming>
+      <bpmn:incoming>Flow_0h77o60</bpmn:incoming>
+      <bpmn:outgoing>Flow_S8_No</bpmn:outgoing>
+      <bpmn:outgoing>Flow_S8_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0pphfgy</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0djljqu</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_VerifyImageQuality" name="Verify Image Quality">
+      <bpmn:incoming>Flow_S7</bpmn:incoming>
+      <bpmn:incoming>Flow_S8_No_Loop</bpmn:incoming>
+      <bpmn:incoming>Flow_0lj4xtc</bpmn:incoming>
+      <bpmn:outgoing>Flow_S8</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0h77o60</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_PerformExam" name="Perform Examination">
+      <bpmn:incoming>Flow_S6</bpmn:incoming>
+      <bpmn:incoming>Flow_0izrj8x</bpmn:incoming>
+      <bpmn:outgoing>Flow_S7</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0lj4xtc</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_RetrieveMWL" name="Retrieve MWL">
+      <bpmn:incoming>Flow_S5</bpmn:incoming>
+      <bpmn:incoming>Flow_0ncntf0</bpmn:incoming>
+      <bpmn:outgoing>Flow_S6</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0izrj8x</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sendTask id="Task_SendDICOM" name="Send DICOM Study">
+      <bpmn:incoming>Flow_S8_Yes</bpmn:incoming>
+      <bpmn:incoming>Flow_0pphfgy</bpmn:incoming>
+      <bpmn:outgoing>Flow_S9</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0lgw6vl</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:userTask id="Task_RepeatAcquisition" name="Repeat Acquisition">
+      <bpmn:incoming>Flow_S8_No</bpmn:incoming>
+      <bpmn:incoming>Flow_0djljqu</bpmn:incoming>
+      <bpmn:outgoing>Flow_S8_No_Loop</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_AnalyzeImages" name="Analyze Images">
+      <bpmn:incoming>Flow_S13_Yes</bpmn:incoming>
+      <bpmn:incoming>Flow_0jjxqyf</bpmn:incoming>
+      <bpmn:outgoing>Flow_S14</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0ud4240</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_GenerateAIFindings" name="Generate AI Findings">
+      <bpmn:incoming>Flow_S14</bpmn:incoming>
+      <bpmn:incoming>Flow_0ud4240</bpmn:incoming>
+      <bpmn:outgoing>Flow_S15</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1hlst7e</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sendTask id="Task_SendAIFindings" name="Send AI Findings">
+      <bpmn:incoming>Flow_S15</bpmn:incoming>
+      <bpmn:incoming>Flow_1hlst7e</bpmn:incoming>
+      <bpmn:outgoing>Flow_S16</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1deum9k</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:sequenceFlow id="Flow_0jjxqyf" name="YES" sourceRef="Gateway_AIEnabled" targetRef="Task_AnalyzeImages" />
+    <bpmn:sequenceFlow id="Flow_0ud4240" sourceRef="Task_AnalyzeImages" targetRef="Task_GenerateAIFindings" />
+    <bpmn:sequenceFlow id="Flow_1hlst7e" sourceRef="Task_GenerateAIFindings" targetRef="Task_SendAIFindings" />
+    <bpmn:sequenceFlow id="Flow_1amvip8" sourceRef="Task_RescheduleExam" targetRef="Task_PublishMWL" />
+    <bpmn:sequenceFlow id="Flow_0ncntf0" name="Patient Attended" sourceRef="Task_SendAppointment" targetRef="Task_RetrieveMWL" />
+    <bpmn:sendTask id="Task_SendORU" name="Send HL7 ORU Report">
+      <bpmn:incoming>Flow_S19</bpmn:incoming>
+      <bpmn:incoming>Flow_1nssc9c</bpmn:incoming>
+      <bpmn:outgoing>Flow_S20</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1pm1t05</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:serviceTask id="Task_StoreStructuredReport" name="Store Structured Report">
+      <bpmn:incoming>Flow_S18</bpmn:incoming>
+      <bpmn:incoming>Flow_1qg1vrz</bpmn:incoming>
+      <bpmn:outgoing>Flow_S19</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1nssc9c</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:intermediateCatchEvent id="Event_ReceiveApprovedReport" name="Receive Approved Report">
+      <bpmn:incoming>Flow_S17</bpmn:incoming>
+      <bpmn:incoming>Flow_110b61l</bpmn:incoming>
+      <bpmn:outgoing>Flow_S18</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1qg1vrz</bpmn:outgoing>
+      <bpmn:messageEventDefinition />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_1qg1vrz" sourceRef="Event_ReceiveApprovedReport" targetRef="Task_StoreStructuredReport" />
+    <bpmn:sequenceFlow id="Flow_1nssc9c" sourceRef="Task_StoreStructuredReport" targetRef="Task_SendORU" />
+    <bpmn:sequenceFlow id="Flow_1pm1t05" sourceRef="Task_SendORU" targetRef="End_RISComplete" />
+    <bpmn:endEvent id="End_RISComplete" name="RIS Workflow Completed">
+      <bpmn:incoming>Flow_S20</bpmn:incoming>
+      <bpmn:incoming>Flow_1pm1t05</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sendTask id="Task_SendImagesForReporting" name="Send Images for Reporting">
+      <bpmn:incoming>Flow_S13_No</bpmn:incoming>
+      <bpmn:incoming>Flow_S16</bpmn:incoming>
+      <bpmn:incoming>Flow_0hb9try</bpmn:incoming>
+      <bpmn:incoming>Flow_1deum9k</bpmn:incoming>
+      <bpmn:outgoing>Flow_S17</bpmn:outgoing>
+      <bpmn:outgoing>Flow_110b61l</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:sequenceFlow id="Flow_110b61l" sourceRef="Task_SendImagesForReporting" targetRef="Event_ReceiveApprovedReport" />
+    <bpmn:sequenceFlow id="Flow_0hb9try" name="NO" sourceRef="Gateway_AIEnabled" targetRef="Task_SendImagesForReporting" />
+    <bpmn:sequenceFlow id="Flow_1deum9k" sourceRef="Task_SendAIFindings" targetRef="Task_SendImagesForReporting" />
+    <bpmn:sequenceFlow id="Flow_093p2lx" sourceRef="Task_RetrieveImages" targetRef="Gateway_AIEnabled" />
+  </bpmn:process>
+  <bpmn:process id="Process_Radiologist" isExecutable="false">
+    <bpmn:sequenceFlow id="Flow_R1" sourceRef="Start_RadiologistReceiveImages" targetRef="Task_ReviewImages" />
+    <bpmn:sequenceFlow id="Flow_R2" sourceRef="Task_ReviewImages" targetRef="Task_ReviewAIFindings" />
+    <bpmn:sequenceFlow id="Flow_R3" sourceRef="Task_ReviewAIFindings" targetRef="Task_WriteReport" />
+    <bpmn:sequenceFlow id="Flow_R4" sourceRef="Task_WriteReport" targetRef="Task_ApproveReport" />
+    <bpmn:sequenceFlow id="Flow_R5" sourceRef="Task_ApproveReport" targetRef="Gateway_ReportApproved" />
+    <bpmn:sequenceFlow id="Flow_R5_No" name="No" sourceRef="Gateway_ReportApproved" targetRef="Task_WriteReport" />
+    <bpmn:sequenceFlow id="Flow_R5_Yes" name="Yes" sourceRef="Gateway_ReportApproved" targetRef="Task_SendApprovedReport" />
+    <bpmn:sequenceFlow id="Flow_R6" sourceRef="Task_SendApprovedReport" targetRef="End_RadiologistDone" />
+    <bpmn:userTask id="Task_ReviewImages" name="Review Images">
+      <bpmn:incoming>Flow_R1</bpmn:incoming>
+      <bpmn:incoming>Flow_0daph60</bpmn:incoming>
+      <bpmn:outgoing>Flow_R2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1w4p8et</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_ReviewAIFindings" name="Review AI Findings">
+      <bpmn:incoming>Flow_R2</bpmn:incoming>
+      <bpmn:incoming>Flow_1w4p8et</bpmn:incoming>
+      <bpmn:outgoing>Flow_R3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0fv4p2w</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_WriteReport" name="Write Radiology Report">
+      <bpmn:incoming>Flow_R3</bpmn:incoming>
+      <bpmn:incoming>Flow_R5_No</bpmn:incoming>
+      <bpmn:incoming>Flow_0fv4p2w</bpmn:incoming>
+      <bpmn:incoming>Flow_0c1e5la</bpmn:incoming>
+      <bpmn:outgoing>Flow_R4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1duejxq</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_ApproveReport" name="Approve Report">
+      <bpmn:incoming>Flow_R4</bpmn:incoming>
+      <bpmn:incoming>Flow_1duejxq</bpmn:incoming>
+      <bpmn:outgoing>Flow_R5</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0q5vngu</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_ReportApproved" name="Report Approved?">
+      <bpmn:incoming>Flow_R5</bpmn:incoming>
+      <bpmn:incoming>Flow_0q5vngu</bpmn:incoming>
+      <bpmn:outgoing>Flow_R5_No</bpmn:outgoing>
+      <bpmn:outgoing>Flow_R5_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0hvl5qb</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0c1e5la</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:startEvent id="Start_RadiologistReceiveImages" name="Receive Images for Reporting">
+      <bpmn:outgoing>Flow_R1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0daph60</bpmn:outgoing>
+      <bpmn:messageEventDefinition />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0y42uc8" sourceRef="Task_SendApprovedReport" targetRef="End_RadiologistDone" />
+    <bpmn:sequenceFlow id="Flow_0hvl5qb" name="YES" sourceRef="Gateway_ReportApproved" targetRef="Task_SendApprovedReport" />
+    <bpmn:endEvent id="End_RadiologistDone" name="Report Approved">
+      <bpmn:incoming>Flow_R6</bpmn:incoming>
+      <bpmn:incoming>Flow_0y42uc8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sendTask id="Task_SendApprovedReport" name="Send Approved Report">
+      <bpmn:incoming>Flow_R5_Yes</bpmn:incoming>
+      <bpmn:incoming>Flow_0hvl5qb</bpmn:incoming>
+      <bpmn:outgoing>Flow_R6</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0y42uc8</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:sequenceFlow id="Flow_0q5vngu" sourceRef="Task_ApproveReport" targetRef="Gateway_ReportApproved" />
+    <bpmn:sequenceFlow id="Flow_1duejxq" sourceRef="Task_WriteReport" targetRef="Task_ApproveReport" />
+    <bpmn:sequenceFlow id="Flow_0fv4p2w" sourceRef="Task_ReviewAIFindings" targetRef="Task_WriteReport" />
+    <bpmn:sequenceFlow id="Flow_1w4p8et" sourceRef="Task_ReviewImages" targetRef="Task_ReviewAIFindings" />
+    <bpmn:sequenceFlow id="Flow_0daph60" sourceRef="Start_RadiologistReceiveImages" targetRef="Task_ReviewImages" />
+    <bpmn:sequenceFlow id="Flow_0c1e5la" name="NO" sourceRef="Gateway_ReportApproved" targetRef="Task_WriteReport" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Intelligent_Radiology">
+    <bpmndi:BPMNPlane id="BPMNPlane_Intelligent_Radiology" bpmnElement="Collaboration_Intelligent_Radiology">
+      <bpmndi:BPMNShape id="Participant_Patient_di" bpmnElement="Participant_Patient" isHorizontal="true" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="160" y="80" width="1900" height="220" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_ReceiveAppointment_di" bpmnElement="Event_ReceiveAppointment">
+        <dc:Bounds x="502" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="480" y="90" width="70" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ProvidePatientData_di" bpmnElement="Task_ProvidePatientData">
+        <dc:Bounds x="340" y="120" width="120" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_ExamDateReached_di" bpmnElement="Event_ExamDateReached">
+        <dc:Bounds x="582" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="559" y="168" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_PatientAttended_di" bpmnElement="Gateway_PatientAttended" isMarkerVisible="true">
+        <dc:Bounds x="675" y="125" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="660" y="87.5" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_PatientArrives_di" bpmnElement="Start_PatientArrives">
+        <dc:Bounds x="242" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="219" y="168" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_ReportDelivered_di" bpmnElement="End_ReportDelivered">
+        <dc:Bounds x="1242" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1219" y="168" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_ReceiveFinalReport_di" bpmnElement="Event_ReceiveFinalReport">
+        <dc:Bounds x="1092" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1069" y="87" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_PatientCancelled_di" bpmnElement="End_PatientCancelled">
+        <dc:Bounds x="992" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="966" y="246" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_PatientReceiveCancellation_di" bpmnElement="Event_PatientReceiveCancellation">
+        <dc:Bounds x="852" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="812" y="164.5" width="115" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1r3k8ge_di" bpmnElement="Flow_1r3k8ge">
+        <di:waypoint x="1128" y="150" />
+        <di:waypoint x="1242" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1g3bdln_di" bpmnElement="Flow_1g3bdln">
+        <di:waypoint x="888" y="220" />
+        <di:waypoint x="992" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1k1udkb_di" bpmnElement="Flow_1k1udkb">
+        <di:waypoint x="460" y="150" />
+        <di:waypoint x="502" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jy4nkp_di" bpmnElement="Flow_0jy4nkp">
+        <di:waypoint x="538" y="150" />
+        <di:waypoint x="582" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0niblwn_di" bpmnElement="Flow_0niblwn">
+        <di:waypoint x="725" y="150" />
+        <di:waypoint x="1092" y="150" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="900" y="132" width="39" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15aedeg_di" bpmnElement="Flow_15aedeg">
+        <di:waypoint x="700" y="175" />
+        <di:waypoint x="700" y="220" />
+        <di:waypoint x="852" y="220" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="728" y="207.5" width="32" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yglfll_di" bpmnElement="Flow_0yglfll">
+        <di:waypoint x="618" y="150" />
+        <di:waypoint x="675" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1pvjfhb_di" bpmnElement="Flow_1pvjfhb">
+        <di:waypoint x="278" y="150" />
+        <di:waypoint x="340" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_HIS_di" bpmnElement="Participant_HIS" isHorizontal="true">
+        <dc:Bounds x="160" y="360" width="2086" height="526" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Receptionist_di" bpmnElement="Lane_Receptionist" isHorizontal="true" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="190" y="360" width="2056" height="170" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_OrderingPhysician_di" bpmnElement="Lane_OrderingPhysician" isHorizontal="true" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="190" y="530" width="2056" height="140" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Billing_di" bpmnElement="Lane_Billing" isHorizontal="true" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="190" y="670" width="2056" height="216" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CreateVisit_di" bpmnElement="Task_CreateVisit">
+        <dc:Bounds x="715" y="370" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ExaminePatient_di" bpmnElement="Task_ExaminePatient">
+        <dc:Bounds x="260" y="570" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_HISReportSent_di" bpmnElement="End_HISReportSent">
+        <dc:Bounds x="1562" y="752" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1536" y="788" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_ReceiveORU_di" bpmnElement="Event_ReceiveORU">
+        <dc:Bounds x="1282" y="752" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1257" y="714.5" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_NotifyPatient_di" bpmnElement="Task_NotifyPatient">
+        <dc:Bounds x="1380" y="740" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RecordFinancialApproval_di" bpmnElement="Task_RecordFinancialApproval">
+        <dc:Bounds x="470" y="730" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStoreReference_1d8vb33_di" bpmnElement="DataStoreReference_1d8vb33">
+        <dc:Bounds x="295" y="795" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="282" y="852" width="128" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VerifyInsurance_di" bpmnElement="Task_VerifyInsurance">
+        <dc:Bounds x="260" y="730" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_InsuranceValid_di" bpmnElement="Gateway_InsuranceValid" isMarkerVisible="true">
+        <dc:Bounds x="640" y="735" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="620" y="703" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStoreReference_0etvsm2_di" bpmnElement="DataStoreReference_0etvsm2">
+        <dc:Bounds x="385" y="435" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="378" y="492" width="65" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_UpdatePatientInfo_di" bpmnElement="Task_UpdatePatientInfo">
+        <dc:Bounds x="540" y="370" width="120" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RegisterPatient_di" bpmnElement="Task_RegisterPatient">
+        <dc:Bounds x="350" y="370" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_ReceivePatientData_di" bpmnElement="Start_ReceivePatientData">
+        <dc:Bounds x="250" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="231" y="418" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendORM_di" bpmnElement="Task_SendORM">
+        <dc:Bounds x="1160" y="590" width="120" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CreateImagingOrder_di" bpmnElement="Task_CreateImagingOrder">
+        <dc:Bounds x="960" y="590" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_HISCancelled_di" bpmnElement="End_HISCancelled">
+        <dc:Bounds x="1012" y="802" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1002" y="845" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendCancellation_di" bpmnElement="Task_SendCancellation">
+        <dc:Bounds x="810" y="790" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1tafe0s_di" bpmnElement="Flow_1tafe0s">
+        <di:waypoint x="760" y="430" />
+        <di:waypoint x="760" y="600" />
+        <di:waypoint x="380" y="600" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0mu6k4k_di" bpmnElement="Flow_0mu6k4k">
+        <di:waypoint x="1080" y="620" />
+        <di:waypoint x="1160" y="620" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tue6eg_di" bpmnElement="Flow_1tue6eg">
+        <di:waypoint x="1220" y="650" />
+        <di:waypoint x="1220" y="770" />
+        <di:waypoint x="1282" y="770" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ktqi4t_di" bpmnElement="Flow_1ktqi4t">
+        <di:waypoint x="1500" y="770" />
+        <di:waypoint x="1562" y="770" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_196cw18_di" bpmnElement="Flow_196cw18">
+        <di:waypoint x="1318" y="770" />
+        <di:waypoint x="1380" y="770" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_16k8mqn_di" bpmnElement="Flow_16k8mqn">
+        <di:waypoint x="930" y="820" />
+        <di:waypoint x="1012" y="820" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0th0y8o_di" bpmnElement="Flow_0th0y8o">
+        <di:waypoint x="380" y="760" />
+        <di:waypoint x="470" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1evapmr_di" bpmnElement="Flow_1evapmr">
+        <di:waypoint x="320" y="630" />
+        <di:waypoint x="320" y="730" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_195ub0j_di" bpmnElement="Flow_195ub0j">
+        <di:waypoint x="690" y="760" />
+        <di:waypoint x="1020" y="760" />
+        <di:waypoint x="1020" y="650" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0mjnk11_di" bpmnElement="Flow_0mjnk11">
+        <di:waypoint x="665" y="785" />
+        <di:waypoint x="665" y="820" />
+        <di:waypoint x="810" y="820" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="690" y="803.5" width="37" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11xr7s2_di" bpmnElement="Flow_11xr7s2">
+        <di:waypoint x="590" y="760" />
+        <di:waypoint x="640" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0kd2bz3_di" bpmnElement="Flow_0kd2bz3">
+        <di:waypoint x="660" y="400" />
+        <di:waypoint x="715" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0a43pt0_di" bpmnElement="Flow_0a43pt0">
+        <di:waypoint x="470" y="400" />
+        <di:waypoint x="540" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1nfyywj_di" bpmnElement="Flow_1nfyywj">
+        <di:waypoint x="286" y="400" />
+        <di:waypoint x="350" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_Synapse_di" bpmnElement="Participant_Synapse" isHorizontal="true">
+        <dc:Bounds x="160" y="940" width="1935" height="685" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_RIS_di" bpmnElement="Lane_RIS" isHorizontal="true" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="190" y="940" width="1905" height="175" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Modality_di" bpmnElement="Lane_Modality" isHorizontal="true" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="190" y="1115" width="1905" height="185" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_PACS_di" bpmnElement="Lane_PACS" isHorizontal="true" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="190" y="1300" width="1905" height="145" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_AI_di" bpmnElement="Lane_AI" isHorizontal="true" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="190" y="1445" width="1905" height="180" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_AIEnabled_di" bpmnElement="Gateway_AIEnabled" isMarkerVisible="true">
+        <dc:Bounds x="285" y="1500" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="243" y="1526" width="50" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateAccession_di" bpmnElement="Task_GenerateAccession">
+        <dc:Bounds x="360" y="960" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_ReceiveORM_di" bpmnElement="Start_ReceiveORM">
+        <dc:Bounds x="242" y="972" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="217" y="1008" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStoreReference_04wggmi_di" bpmnElement="DataStoreReference_04wggmi">
+        <dc:Bounds x="395" y="1025" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="364" y="1082" width="112" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ScheduleExam_di" bpmnElement="Task_ScheduleExam">
+        <dc:Bounds x="535" y="960" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PublishMWL_di" bpmnElement="Task_PublishMWL">
+        <dc:Bounds x="700" y="960" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendAppointment_di" bpmnElement="Task_SendAppointment">
+        <dc:Bounds x="900" y="960" width="120" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RescheduleExam_di" bpmnElement="Task_RescheduleExam">
+        <dc:Bounds x="1115" y="960" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReceiveDICOM_di" bpmnElement="Task_ReceiveDICOM">
+        <dc:Bounds x="240" y="1330" width="120" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ArchiveDICOM_di" bpmnElement="Task_ArchiveDICOM">
+        <dc:Bounds x="420" y="1330" width="120" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RetrieveImages_di" bpmnElement="Task_RetrieveImages">
+        <dc:Bounds x="590" y="1330" width="120" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ImagesComplete_di" bpmnElement="Gateway_ImagesComplete" isMarkerVisible="true">
+        <dc:Bounds x="740" y="1175" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="716" y="1228" width="87" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VerifyImageQuality_di" bpmnElement="Task_VerifyImageQuality">
+        <dc:Bounds x="580" y="1170" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PerformExam_di" bpmnElement="Task_PerformExam">
+        <dc:Bounds x="420" y="1170" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RetrieveMWL_di" bpmnElement="Task_RetrieveMWL">
+        <dc:Bounds x="260" y="1170" width="120" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendDICOM_di" bpmnElement="Task_SendDICOM">
+        <dc:Bounds x="920" y="1140" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RepeatAcquisition_di" bpmnElement="Task_RepeatAcquisition">
+        <dc:Bounds x="900" y="1220" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AnalyzeImages_di" bpmnElement="Task_AnalyzeImages">
+        <dc:Bounds x="380" y="1550" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateAIFindings_di" bpmnElement="Task_GenerateAIFindings">
+        <dc:Bounds x="590" y="1550" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendAIFindings_di" bpmnElement="Task_SendAIFindings">
+        <dc:Bounds x="790" y="1550" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendORU_di" bpmnElement="Task_SendORU">
+        <dc:Bounds x="1820" y="1010" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_StoreStructuredReport_di" bpmnElement="Task_StoreStructuredReport">
+        <dc:Bounds x="1620" y="1010" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_ReceiveApprovedReport_di" bpmnElement="Event_ReceiveApprovedReport">
+        <dc:Bounds x="1452" y="1022" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1428" y="984.5" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_RISComplete_di" bpmnElement="End_RISComplete">
+        <dc:Bounds x="2032" y="1022" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2006" y="1070" width="98" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendImagesForReporting_di" bpmnElement="Task_SendImagesForReporting">
+        <dc:Bounds x="1300" y="1350" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0kz964s_di" bpmnElement="Flow_0kz964s">
+        <di:waypoint x="278" y="990" />
+        <di:waypoint x="360" y="990" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08zf6y9_di" bpmnElement="Flow_08zf6y9">
+        <di:waypoint x="480" y="990" />
+        <di:waypoint x="535" y="990" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0glwol4_di" bpmnElement="Flow_0glwol4">
+        <di:waypoint x="655" y="990" />
+        <di:waypoint x="700" y="990" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1yzfw0f_di" bpmnElement="Flow_1yzfw0f">
+        <di:waypoint x="820" y="990" />
+        <di:waypoint x="900" y="990" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0crxlsr_di" bpmnElement="Flow_0crxlsr">
+        <di:waypoint x="1020" y="990" />
+        <di:waypoint x="1115" y="990" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1038" y="972" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0izrj8x_di" bpmnElement="Flow_0izrj8x">
+        <di:waypoint x="380" y="1200" />
+        <di:waypoint x="420" y="1200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lj4xtc_di" bpmnElement="Flow_0lj4xtc">
+        <di:waypoint x="540" y="1200" />
+        <di:waypoint x="580" y="1200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pphfgy_di" bpmnElement="Flow_0pphfgy">
+        <di:waypoint x="765" y="1175" />
+        <di:waypoint x="765" y="1160" />
+        <di:waypoint x="920" y="1160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="748" y="1143" width="57" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0h77o60_di" bpmnElement="Flow_0h77o60">
+        <di:waypoint x="700" y="1200" />
+        <di:waypoint x="740" y="1200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lgw6vl_di" bpmnElement="Flow_0lgw6vl">
+        <di:waypoint x="1040" y="1170" />
+        <di:waypoint x="1080" y="1170" />
+        <di:waypoint x="1080" y="1290" />
+        <di:waypoint x="300" y="1290" />
+        <di:waypoint x="300" y="1330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vid3g8_di" bpmnElement="Flow_0vid3g8">
+        <di:waypoint x="360" y="1360" />
+        <di:waypoint x="420" y="1360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1i8q9c6_di" bpmnElement="Flow_1i8q9c6">
+        <di:waypoint x="540" y="1360" />
+        <di:waypoint x="590" y="1360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0djljqu_di" bpmnElement="Flow_0djljqu">
+        <di:waypoint x="790" y="1200" />
+        <di:waypoint x="820" y="1200" />
+        <di:waypoint x="820" y="1240" />
+        <di:waypoint x="900" y="1240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="824" y="1212.5" width="52" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jjxqyf_di" bpmnElement="Flow_0jjxqyf">
+        <di:waypoint x="310" y="1550" />
+        <di:waypoint x="310" y="1580" />
+        <di:waypoint x="380" y="1580" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="310" y="1562" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ud4240_di" bpmnElement="Flow_0ud4240">
+        <di:waypoint x="500" y="1580" />
+        <di:waypoint x="590" y="1580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hlst7e_di" bpmnElement="Flow_1hlst7e">
+        <di:waypoint x="710" y="1580" />
+        <di:waypoint x="790" y="1580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1amvip8_di" bpmnElement="Flow_1amvip8">
+        <di:waypoint x="1143" y="1020" />
+        <di:waypoint x="1143" y="1050" />
+        <di:waypoint x="760" y="1050" />
+        <di:waypoint x="760" y="1020" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ncntf0_di" bpmnElement="Flow_0ncntf0">
+        <di:waypoint x="960" y="1020" />
+        <di:waypoint x="960" y="1100" />
+        <di:waypoint x="320" y="1100" />
+        <di:waypoint x="320" y="1170" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="601" y="1082" width="129" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qg1vrz_di" bpmnElement="Flow_1qg1vrz">
+        <di:waypoint x="1488" y="1040" />
+        <di:waypoint x="1620" y="1040" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1nssc9c_di" bpmnElement="Flow_1nssc9c">
+        <di:waypoint x="1740" y="1040" />
+        <di:waypoint x="1820" y="1040" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1pm1t05_di" bpmnElement="Flow_1pm1t05">
+        <di:waypoint x="1940" y="1040" />
+        <di:waypoint x="2032" y="1040" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_110b61l_di" bpmnElement="Flow_110b61l">
+        <di:waypoint x="1360" y="1350" />
+        <di:waypoint x="1360" y="1040" />
+        <di:waypoint x="1452" y="1040" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hb9try_di" bpmnElement="Flow_0hb9try">
+        <di:waypoint x="335" y="1525" />
+        <di:waypoint x="1310" y="1525" />
+        <di:waypoint x="1310" y="1410" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="753" y="1503" width="37" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1deum9k_di" bpmnElement="Flow_1deum9k">
+        <di:waypoint x="850" y="1550" />
+        <di:waypoint x="850" y="1380" />
+        <di:waypoint x="1300" y="1380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_093p2lx_di" bpmnElement="Flow_093p2lx">
+        <di:waypoint x="650" y="1390" />
+        <di:waypoint x="650" y="1430" />
+        <di:waypoint x="310" y="1430" />
+        <di:waypoint x="310" y="1500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_Radiologist_di" bpmnElement="Participant_Radiologist" isHorizontal="true" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="230" y="1730" width="1900" height="210" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReviewImages_di" bpmnElement="Task_ReviewImages">
+        <dc:Bounds x="465" y="1800" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReviewAIFindings_di" bpmnElement="Task_ReviewAIFindings">
+        <dc:Bounds x="625" y="1800" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_WriteReport_di" bpmnElement="Task_WriteReport">
+        <dc:Bounds x="785" y="1800" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ApproveReport_di" bpmnElement="Task_ApproveReport">
+        <dc:Bounds x="945" y="1800" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ReportApproved_di" bpmnElement="Gateway_ReportApproved" isMarkerVisible="true">
+        <dc:Bounds x="1105" y="1805" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1086" y="1855" width="89" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_RadiologistReceiveImages_di" bpmnElement="Start_RadiologistReceiveImages">
+        <dc:Bounds x="357" y="1812" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="337" y="1848" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_RadiologistDone_di" bpmnElement="End_RadiologistDone">
+        <dc:Bounds x="1482" y="1812" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1459" y="1848" width="83" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendApprovedReport_di" bpmnElement="Task_SendApprovedReport">
+        <dc:Bounds x="1270" y="1800" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0y42uc8_di" bpmnElement="Flow_0y42uc8">
+        <di:waypoint x="1390" y="1830" />
+        <di:waypoint x="1482" y="1830" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hvl5qb_di" bpmnElement="Flow_0hvl5qb">
+        <di:waypoint x="1155" y="1830" />
+        <di:waypoint x="1270" y="1830" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1180" y="1812" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0q5vngu_di" bpmnElement="Flow_0q5vngu">
+        <di:waypoint x="1065" y="1830" />
+        <di:waypoint x="1105" y="1830" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1duejxq_di" bpmnElement="Flow_1duejxq">
+        <di:waypoint x="905" y="1830" />
+        <di:waypoint x="945" y="1830" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0fv4p2w_di" bpmnElement="Flow_0fv4p2w">
+        <di:waypoint x="745" y="1830" />
+        <di:waypoint x="785" y="1830" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1w4p8et_di" bpmnElement="Flow_1w4p8et">
+        <di:waypoint x="585" y="1830" />
+        <di:waypoint x="625" y="1830" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0daph60_di" bpmnElement="Flow_0daph60">
+        <di:waypoint x="393" y="1830" />
+        <di:waypoint x="465" y="1830" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0c1e5la_di" bpmnElement="Flow_0c1e5la">
+        <di:waypoint x="1130" y="1800" />
+        <di:waypoint x="1130" y="1770" />
+        <di:waypoint x="830" y="1770" />
+        <di:waypoint x="830" y="1800" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="945" y="1752" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1631bhb_di" bpmnElement="Flow_1631bhb">
+        <di:waypoint x="400" y="180" />
+        <di:waypoint x="400" y="370" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="418" y="316" width="92" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07vbuk8_di" bpmnElement="Flow_07vbuk8">
+        <di:waypoint x="1440" y="740" />
+        <di:waypoint x="1440" y="454" />
+        <di:waypoint x="1110" y="454" />
+        <di:waypoint x="1110" y="170" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1266" y="433" width="104" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pk7oeg_di" bpmnElement="Flow_0pk7oeg">
+        <di:waypoint x="870" y="790" />
+        <di:waypoint x="870" y="238" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_046zes6_di" bpmnElement="Flow_046zes6">
+        <di:waypoint x="1190" y="650" />
+        <di:waypoint x="1190" y="930" />
+        <di:waypoint x="260" y="930" />
+        <di:waypoint x="260" y="972" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="354" y="912" width="113" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0kx25vs_di" bpmnElement="Flow_0kx25vs">
+        <di:waypoint x="950" y="960" />
+        <di:waypoint x="950" y="564" />
+        <di:waypoint x="520" y="564" />
+        <di:waypoint x="520" y="168" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1na8ra9_di" bpmnElement="Flow_1na8ra9">
+        <di:waypoint x="1880" y="1010" />
+        <di:waypoint x="1880" y="899" />
+        <di:waypoint x="1300" y="899" />
+        <di:waypoint x="1300" y="788" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1570" y="905" width="140" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cxn5me_di" bpmnElement="Flow_0cxn5me">
+        <di:waypoint x="1330" y="1800" />
+        <di:waypoint x="1330" y="1700" />
+        <di:waypoint x="1470" y="1700" />
+        <di:waypoint x="1470" y="1058" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1349" y="1682" width="122" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07z32r9_di" bpmnElement="Flow_07z32r9">
+        <di:waypoint x="1360" y="1410" />
+        <di:waypoint x="1360" y="1650" />
+        <di:waypoint x="375" y="1650" />
+        <di:waypoint x="375" y="1812" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="391" y="1663" width="118" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_168j7o6_di" bpmnElement="Flow_168j7o6">
+        <di:waypoint x="850" y="1610" />
+        <di:waypoint x="850" y="1705" />
+        <di:waypoint x="670" y="1705" />
+        <di:waypoint x="670" y="1800" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="700" y="1687" width="87" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
